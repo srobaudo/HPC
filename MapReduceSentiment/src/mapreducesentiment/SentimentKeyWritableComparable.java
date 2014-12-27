@@ -18,33 +18,33 @@ import org.apache.hadoop.io.WritableComparable;
 public class SentimentKeyWritableComparable  implements WritableComparable {
        // Some data
        private Double score;
-       private Integer numberComment;
+       private Long position;
        
        public void setScore(Double _score){
            score = _score;
        }
        
-       public void setNumberComment(Integer _numComment){
-           numberComment = _numComment;
+       public void setPosition(Long _numComment){
+           position = _numComment;
        }
        
        @Override
        public void write(DataOutput out) throws IOException {         
-         out.writeInt(numberComment);
+         out.writeLong(position);
          out.writeDouble(score);
        }
        
        @Override
        public void readFields(DataInput in) throws IOException {         
-         numberComment = in.readInt();
+         position = in.readLong();
          score = in.readDouble();
        }
        
        @Override
        public int compareTo(Object o) {
          SentimentKeyWritableComparable sentiment = (SentimentKeyWritableComparable) o;
-         Integer thisValue = this.numberComment;
-         Integer thatValue = sentiment.numberComment;
+         Long thisValue = this.position;
+         Long thatValue = sentiment.position;
          return (thatValue >= thisValue ? -1 : (Objects.equals(thisValue, thatValue) ? 0 : 1));
        }
 
@@ -52,7 +52,7 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
        public int hashCode() {
          final int prime = 31;
          int result = 1;
-         result = prime * result + numberComment;
+         result = (int) (prime * result + position);
          //result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
          return result;
        }     
@@ -66,6 +66,6 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
             return false;
         }
         final SentimentKeyWritableComparable other = (SentimentKeyWritableComparable) obj;
-        return Objects.equals(this.numberComment, other.numberComment);
+        return Objects.equals(this.position, other.position);
     }
 }
