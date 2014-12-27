@@ -6,26 +6,39 @@
 package mapreducesentiment;
 
 import java.io.IOException;
-import java.util.Iterator;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  *
  * @author camila
  */
-public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, LongWritable, SentimentKeyWritableComparable, IntWritable> {
-    private IntWritable result = new IntWritable();
- 
+public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, LongWritable, SentimentKeyWritableComparable, DoubleWritable> {
+
+    private DoubleWritable result = new DoubleWritable();
+
     @Override
-   public void reduce(SentimentKeyWritableComparable key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
-     int sum = 0;
-     for (LongWritable val : values) {
-       sum += val.get();
-     }
-     result.set(sum);
-     context.write(key, result);
-   } 
+    public void reduce(SentimentKeyWritableComparable key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+        Double sum = 0.0;
+        long count = 0;
+        
+        for (LongWritable val : values) {
+            sum += getScore(key.getScore(), val.get());
+            count++;
+        }
+        
+        result.set(sum / count);
+        context.write(key, result);
+    }
+    
+    private double getScore(Double expected, Long got)
+    {
+        Long distance = Math.abs(got - Math.round(expected));
+        return distance == 0 
+                ? 1.0 
+                : distance == 1 
+                    ? 0.75 
+                    : 0.0;
+    }
 }
