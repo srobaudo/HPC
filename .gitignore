@@ -34,3 +34,9 @@ build/
 .rvmrc
 MapReduceSentiment/nbproject/private/private.properties
 MapReduceSentiment/nbproject/private/private.properties
+librerias/ejml-0.23.jar
+librerias/javax.json.jar
+librerias/jollyday.jar
+librerias/stanford-corenlp-3.5.0-models.jar
+librerias/stanford-corenlp-3.5.0.jar
+librerias/xom.jar

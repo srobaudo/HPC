@@ -18,33 +18,33 @@ import org.apache.hadoop.io.WritableComparable;
 public class SentimentKeyWritableComparable  implements WritableComparable {
        // Some data
        private Double score;
-       private Long position;
+       private Integer productId;
        
        public void setScore(Double _score){
            score = _score;
        }
        
-       public void setPosition(Long _numComment){
-           position = _numComment;
+       public void setProductId(Integer _numComment){
+           productId = _numComment;
        }
        
        @Override
        public void write(DataOutput out) throws IOException {         
-         out.writeLong(position);
+         out.writeInt(productId);
          out.writeDouble(score);
        }
        
        @Override
        public void readFields(DataInput in) throws IOException {         
-         position = in.readLong();
+         productId = in.readInt();
          score = in.readDouble();
        }
        
        @Override
        public int compareTo(Object o) {
          SentimentKeyWritableComparable sentiment = (SentimentKeyWritableComparable) o;
-         Long thisValue = this.position;
-         Long thatValue = sentiment.position;
+         Integer thisValue = this.productId;
+         Integer thatValue = sentiment.productId;
          return (thatValue >= thisValue ? -1 : (Objects.equals(thisValue, thatValue) ? 0 : 1));
        }
 
@@ -52,7 +52,7 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
        public int hashCode() {
          final int prime = 31;
          int result = 1;
-         result = (int) (prime * result + position);
+         result = prime * result + productId;
          //result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
          return result;
        }     
@@ -66,6 +66,6 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
             return false;
         }
         final SentimentKeyWritableComparable other = (SentimentKeyWritableComparable) obj;
-        return Objects.equals(this.position, other.position);
+        return Objects.equals(this.productId, other.productId);
     }
 }

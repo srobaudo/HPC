@@ -28,7 +28,7 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
     public static final String START_TAG_KEY = "product/productid:";
     public static final String END_TAG_KEY = "\n\n";
     private final TextInputFormat textIF = new TextInputFormat();
-    public Pattern pattern = Pattern.compile("product\\/productId\\:\\s+[a-zA-Z0-9]+.*review\\/score\\:\\s+([\\d\\.]+).*review\\/text\\:\\s+(.*)",
+    public Pattern pattern = Pattern.compile("product\\/productId\\:\\s+([a-zA-Z0-9]+).*review\\/score\\:\\s+([\\d\\.]+).*review\\/text\\:\\s+(.*)",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
 
     @Override
@@ -109,7 +109,7 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
                                     fields[i] = new Text(matcher.group(i + 1));
                                 }
 
-                                key.setPosition(fsin.getPos());
+                                key.setProductId(Integer.parseInt(fields[1].toString()));
                                 key.setScore(Double.parseDouble(fields[1].toString()));
                                 value.set(fields[2]);
                                 return true;
