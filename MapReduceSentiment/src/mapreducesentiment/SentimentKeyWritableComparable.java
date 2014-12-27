@@ -20,6 +20,14 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
        private Double score;
        private Integer numberComment;
        
+       public void setScore(Double _score){
+           score = _score;
+       }
+       
+       public void setNumberComment(Integer _numComment){
+           numberComment = _numComment;
+       }
+       
        @Override
        public void write(DataOutput out) throws IOException {         
          out.writeInt(numberComment);
@@ -58,9 +66,6 @@ public class SentimentKeyWritableComparable  implements WritableComparable {
             return false;
         }
         final SentimentKeyWritableComparable other = (SentimentKeyWritableComparable) obj;
-        if (!Objects.equals(this.numberComment, other.numberComment)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.numberComment, other.numberComment);
     }
 }
