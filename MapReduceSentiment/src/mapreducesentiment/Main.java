@@ -38,7 +38,7 @@ public class Main extends Configured implements Tool {
 
         job.setInputFormatClass(MovieCommentInputFormat.class);
 
-        FileInputFormat.setInputPaths(job, new Path("wasb:///Scene.main.mdl"));//args[0]));
+        FileInputFormat.setInputPaths(job, new Path("wasb:///movies.txt"));//args[0]));
         FileOutputFormat.setOutputPath(job, new Path("wasb:///sentiment/test/output"));//args[1]));
 
         job.setJarByClass(Main.class);

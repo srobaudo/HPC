@@ -20,6 +20,8 @@ public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, Lo
 
     @Override
     public void reduce(SentimentKeyWritableComparable key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+        
+        System.out.println("Entro al reducer");
         Double sum = 0.0;
         long count = 0;
         
@@ -27,7 +29,7 @@ public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, Lo
             sum += getScore(key.getScore(), val.get());
             count++;
         }
-        
+                
         result.set(sum / count);
         context.write(key, result);
     }

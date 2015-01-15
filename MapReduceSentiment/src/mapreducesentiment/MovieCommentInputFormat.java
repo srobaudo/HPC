@@ -25,7 +25,7 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableComparable, Text> {
 
-    public static final String START_TAG_KEY = "product/productid:";
+    public static final String START_TAG_KEY = "productId";
     public static final String END_TAG_KEY = "\n\n";
     private final TextInputFormat textIF = new TextInputFormat();
     public Pattern pattern = Pattern.compile("product\\/productId\\:\\s+([a-zA-Z0-9]+).*review\\/score\\:\\s+([\\d\\.]+).*review\\/text\\:\\s+(.*)",
@@ -73,7 +73,10 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
         @Override
         public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException, InterruptedException {
             startTag = START_TAG_KEY.getBytes("utf-8");
-            endTag = END_TAG_KEY.getBytes("utf-8");
+            endTag =  new byte[] {13, 10, 13, 10};// END_TAG_KEY.getBytes("utf-8");
+            
+            System.out.println("startTag: "+ startTag);
+            System.out.println("endTag: "+ endTag);
 
             FileSplit split = (FileSplit)genericSplit;
             // open the file and seek to the start of the split
@@ -84,14 +87,19 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
             FileSystem fs = file.getFileSystem(job);
             fsin = fs.open(split.getPath());
             fsin.seek(start);
+            
+            System.out.println("Terminó de inicializar input format");
         }
 
         @Override
         public boolean nextKeyValue() throws IOException, InterruptedException {
+            System.out.println("Se llama a next - input format");
             if (fsin.getPos() < end) {
+                System.out.println("Antes del readUntilMatch start - input format");
                 if (readUntilMatch(startTag, false)) {
                     try {
                         buffer.write(startTag);
+                        System.out.println("Antes del readUntilMatch end - input format");
                         if (readUntilMatch(endTag, true)) {
 
                             Matcher matcher;
@@ -112,11 +120,16 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
                                 key.setProductId(Integer.parseInt(fields[1].toString()));
                                 key.setScore(Double.parseDouble(fields[1].toString()));
                                 value.set(fields[2]);
+                                System.out.println("Return true - input format");
                                 return true;
                             }
+                            System.out.println("Return false -  input format");
                             return false;
                         }
-                    } finally {
+                    }catch(Exception ex){
+                        System.out.println("ERROR: " + ex.getMessage());
+                    } 
+                    finally {
                         buffer.reset();
                     }
                 }
@@ -149,11 +162,16 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
         private boolean readUntilMatch(byte[] match, boolean withinBlock) throws IOException {
             int i = 0;
             while (true) {
+                //System.out.println("readUntilMatch - Entro al while - "+ i);
                 int b = fsin.read();
                 // end of file:
                 if (b == -1) {
+                     System.out.println("false1 - Entro al while ");
                     return false;
                 }
+                
+                System.out.println("Match b - "+ b + " match tag - " + match[i]);
+                
                 // save to buffer:
                 if (withinBlock) {
                     buffer.write(b);
@@ -163,6 +181,7 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
                 if (b == match[i]) {
                     i++;
                     if (i >= match.length) {
+                         System.out.println("true - Entro al while ");
                         return true;
                     }
                 } else {
@@ -170,6 +189,7 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
                 }
                 // see if we've passed the stop point:
                 if (!withinBlock && i == 0 && fsin.getPos() >= end) {
+                     System.out.println("false - Entro al while ");
                     return false;
                 }
             }
