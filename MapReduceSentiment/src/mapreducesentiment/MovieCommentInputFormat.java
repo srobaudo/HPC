@@ -27,7 +27,6 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
 
     public static final String START_TAG_KEY = "productId";
     public static final String END_TAG_KEY = "\n\n";
-    public static final String COMPLETE_START_TAG_KEY = "product/productId";
     private final TextInputFormat textIF = new TextInputFormat();
     public Pattern pattern = Pattern.compile("product\\/productId\\:\\s+([a-zA-Z0-9]+).*review\\/score\\:\\s+([\\d\\.]+).*review\\/text\\:\\s+(.*)",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -55,7 +54,6 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
 
         private byte[] startTag;
         private byte[] endTag;
-        private static byte[] completeStartTag;
         private long start;
         private long end;
         private FSDataInputStream fsin;
@@ -75,7 +73,7 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
         @Override
         public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException, InterruptedException {
             startTag = START_TAG_KEY.getBytes("utf-8");
-            endTag =  new byte[] {13, 10, 13, 10};// END_TAG_KEY.getBytes("utf-8"); ES \n\n
+            endTag =  new byte[] {13, 10, 13, 10};// END_TAG_KEY.getBytes("utf-8");
             
             System.out.println("startTag: "+ startTag);
             System.out.println("endTag: "+ endTag);
@@ -100,12 +98,12 @@ public class MovieCommentInputFormat extends InputFormat<SentimentKeyWritableCom
                 System.out.println("Antes del readUntilMatch start - input format");
                 if (readUntilMatch(startTag, false)) {
                     try {
-                        buffer.write(completeStartTag);
+                        buffer.write(startTag);
                         System.out.println("Antes del readUntilMatch end - input format");
                         if (readUntilMatch(endTag, true)) {
 
                             Matcher matcher;
-                            String comentario = new String(buffer.getData());
+                            String comentario = buffer.toString();
                             matcher = pattern.matcher(comentario);
 
                             if (matcher.find()) {
