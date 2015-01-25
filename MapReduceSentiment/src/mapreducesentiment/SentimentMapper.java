@@ -18,7 +18,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -44,7 +43,6 @@ public class SentimentMapper extends Mapper<SentimentKeyWritableComparable, Text
             // run all Annotators on this text
             pipeline.annotate(document);
 
-       // these are all the sentences in this document
             // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
             List<CoreMap> sentences = document.get(SentencesAnnotation.class);
 

@@ -42,3 +42,5 @@ librerias/stanford-corenlp-3.5.0.jar
 librerias/xom.jar
 /MapReduceSentiment/dist/
 MapReduceSentiment/nbproject/private/private.properties
+/SerialSentiment/nbproject/private/
+/SerialSentiment/dist/
