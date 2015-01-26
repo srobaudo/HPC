@@ -145,6 +145,11 @@ public class SerialSentiment {
                     Double sum = 0.0;
                     long count = 0;
                     
+                    if (scores.scores.isEmpty())
+                    {
+                        continue;
+                    }
+                    
                     for (Long score : scores.scores)
                     {
                         sum += getScore(scores.rating, score);
