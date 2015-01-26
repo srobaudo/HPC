@@ -57,6 +57,8 @@ public class SerialSentiment {
         } catch (IOException ex) {
             Logger.getLogger(SerialSentiment.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        Reduce();
     }
 
     private static String GetNextComment(Iterator<String> lines) 
@@ -131,5 +133,36 @@ public class SerialSentiment {
         System.out.println("Resultado del comentario: " + redondeo + " (" + average + ")");
         
         return redondeo;
+    }
+    
+    private static void Reduce()
+    {
+        results.forEach(
+            (id, movieRating) -> 
+            {
+                for (RatingScore scores : movieRating.ratings) 
+                {
+                    Double sum = 0.0;
+                    long count = 0;
+                    
+                    for (Long score : scores.scores)
+                    {
+                        sum += getScore(scores.rating, score);
+                        count++;
+                    }
+                    
+                    System.out.println(id + "-" + scores.rating + "\t" + (sum / count));
+                }
+            });
+    }
+    
+    private static double getScore(Long expected, Long got)
+    {
+        Long distance = Math.abs(got - expected);
+        return distance == 0 
+                ? 1.0 
+                : distance == 1 
+                    ? 0.75 
+                    : 0.0;
     }
 }
