@@ -41,13 +41,18 @@ public class SerialSentiment {
     
     public static void main(String[] args) 
     {
+        // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
+        Properties props = new Properties();
+        props.put("annotators", "tokenize, ssplit, parse, sentiment");
+        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+        
         try (Stream<String> stream = Files.lines(Paths.get(pathToCorpus), Charset.defaultCharset()))
         {
             Iterator<String> lines = stream.iterator();
             while (lines.hasNext())
             {
                 String nextToProcess = GetNextComment(lines);
-                ParseComment(nextToProcess);
+                ParseComment(nextToProcess, pipeline);
             }
         } catch (IOException ex) {
             Logger.getLogger(SerialSentiment.class.getName()).log(Level.SEVERE, null, ex);
@@ -56,26 +61,21 @@ public class SerialSentiment {
 
     private static String GetNextComment(Iterator<String> lines) 
     {
-        boolean previousWasLineBreak = false;
-        boolean currentIsLineBreak;
         String currentLine;
         String nextToProcess = "";
         while (lines.hasNext())
         {
             currentLine = lines.next();
-            nextToProcess += currentLine;
-            
-            currentIsLineBreak = System.lineSeparator().equals(currentLine);
-            if (previousWasLineBreak && currentIsLineBreak)
+            if ("".equals(currentLine))
             {
                 break;
             }
-            previousWasLineBreak = currentIsLineBreak;
+            nextToProcess += System.lineSeparator() + currentLine;
         }
         return nextToProcess;
     }
 
-    private static void ParseComment(String nextToProcess)
+    private static void ParseComment(String nextToProcess, StanfordCoreNLP pipeline)
     {
         Matcher matcher = pattern.matcher(nextToProcess);
         if (matcher.find()) {
@@ -86,11 +86,11 @@ public class SerialSentiment {
                 fields[i] = matcher.group(i + 1);
             }
             
-            String movieID = fields[1];
-            Long rating = Long.parseLong(fields[2]);
-            String comment = fields[3];
+            String movieID = fields[0];
+            Long rating = Long.parseLong(fields[1]);
+            String comment = fields[2];
             
-            Long score = SentimentAnalysis(comment);
+            Long score = SentimentAnalysis(comment, pipeline);
             
             if (!results.containsKey(movieID))
             {
@@ -100,13 +100,8 @@ public class SerialSentiment {
         }
     }
     
-    private static Long SentimentAnalysis(String comment)
+    private static Long SentimentAnalysis(String comment, StanfordCoreNLP pipeline)
     {
-        // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
-        Properties props = new Properties();
-        props.put("annotators", "tokenize, ssplit, parse, sentiment");
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-
         // create an empty Annotation just with the given text
         Annotation document = new Annotation(comment);
 

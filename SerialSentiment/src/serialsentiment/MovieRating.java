@@ -20,6 +20,7 @@ public class MovieRating
 
         for (int i = 0; i < 5; i++)
         {
+            ratings[i] = new RatingScore();
             ratings[i].rating = i;
         }
     }
