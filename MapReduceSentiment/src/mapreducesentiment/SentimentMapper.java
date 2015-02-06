@@ -26,16 +26,20 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @author camila
  */
 public class SentimentMapper extends Mapper<SentimentKeyWritableComparable, Text, SentimentKeyWritableComparable, LongWritable> {
-
+    private StanfordCoreNLP pipeline;
+    
+    @Override
+    public void setup(Context context) throws IOException, InterruptedException 
+    {
+        Properties props = new Properties();
+        props.put("annotators", "tokenize, ssplit, parse, sentiment");
+        pipeline = new StanfordCoreNLP(props);
+    }
+    
     @Override
     public void map(SentimentKeyWritableComparable key, Text value, Context output) throws IOException, InterruptedException {
         try {
             System.out.println("Entro al Map");
-
-            // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
-            Properties props = new Properties();
-            props.put("annotators", "tokenize, ssplit, parse, sentiment");
-            StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
             // create an empty Annotation just with the given text
             Annotation document = new Annotation(value.toString());
