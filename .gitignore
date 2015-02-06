@@ -44,3 +44,7 @@ librerias/xom.jar
 MapReduceSentiment/nbproject/private/private.properties
 /SerialSentiment/nbproject/private/
 /SerialSentiment/dist/
+SerialSentiment/nbproject/project.xml
+SerialSentiment/nbproject/build-impl.xml
+SerialSentiment/nbproject/genfiles.properties
+SerialSentiment/nbproject/project.properties

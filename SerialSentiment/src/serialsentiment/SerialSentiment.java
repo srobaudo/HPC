@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,7 +34,7 @@ import java.util.stream.Stream;
  */
 public class SerialSentiment {
 
-    private static final String pathToCorpus = "C:\\Users\\Sergio\\Documents\\GitHub\\HPC\\SerialSentiment\\movies.txt";
+    private static final String pathToCorpus = "movies3.txt";
     
     public static final Pattern pattern = Pattern.compile("product\\/productId\\:\\s+([a-zA-Z0-9]+).*review\\/score\\:\\s+([\\d]+)\\..*review\\/text\\:\\s+(.*)", 
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -41,6 +43,8 @@ public class SerialSentiment {
     
     public static void main(String[] args) 
     {
+        Date com = new Date();
+        System.out.println("Comienzo: " + com.toLocaleString());
         // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution 
         Properties props = new Properties();
         props.put("annotators", "tokenize, ssplit, parse, sentiment");
@@ -52,28 +56,40 @@ public class SerialSentiment {
             while (lines.hasNext())
             {
                 String nextToProcess = GetNextComment(lines);
-                ParseComment(nextToProcess, pipeline);
+                if(!"".equals(nextToProcess)){
+                    ParseComment(nextToProcess, pipeline);
+                }                
             }
         } catch (IOException ex) {
             Logger.getLogger(SerialSentiment.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         Reduce();
+        
+        Date fin = new Date();                
+        System.out.println("Fin: "  + fin.toLocaleString());
     }
 
     private static String GetNextComment(Iterator<String> lines) 
     {
         String currentLine;
         String nextToProcess = "";
-        while (lines.hasNext())
-        {
-            currentLine = lines.next();
-            if ("".equals(currentLine))
+        try{
+            while (lines.hasNext())
             {
-                break;
+                currentLine = lines.next();
+                if ("".equals(currentLine))
+                {
+                    break;
+                }
+                nextToProcess += System.lineSeparator() + currentLine;
             }
-            nextToProcess += System.lineSeparator() + currentLine;
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+            //skip corrupted lines
+            nextToProcess="";
         }
+        
         return nextToProcess;
     }
 
