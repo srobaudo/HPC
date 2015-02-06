@@ -49,12 +49,12 @@ public class SentimentMapper extends Mapper<SentimentKeyWritableComparable, Text
             int result = 0;
             int count = 0;
             for (CoreMap sentence : sentences) {
-                String sentimentStr = sentence.get(SentimentCoreAnnotations.ClassName.class);
+                //String sentimentStr = sentence.get(SentimentCoreAnnotations.ClassName.class);
 
                 Tree sentimentTree = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class);
                 int sentiment = RNNCoreAnnotations.getPredictedClass(sentimentTree);
 
-                System.out.println("(" + sentiment + ")" + sentimentStr + "\t->\t " + sentence.toString());
+                //System.out.println("(" + sentiment + ")" + sentimentStr + "\t->\t " + sentence.toString());
 
                 result += sentiment;
                 count++;

@@ -9,6 +9,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 
 /**
@@ -19,51 +21,53 @@ public class SentimentKeyWritableComparable implements WritableComparable {
 
     // Some data
 
-    private Double score;
-    private Integer productId;
+    private final DoubleWritable score = new DoubleWritable();
+    private final Text productId = new Text();
 
-    public void setScore(Double _score) {
-        score = _score;
+    public void setScore(DoubleWritable _score) {
+        score.set(_score.get());
     }
 
-    public void setProductId(Integer _numComment) {
-        productId = _numComment;
+    public void setProductId(Text _numComment) {
+        productId.set(_numComment);
     }
 
-    public Double getScore() {
+    public DoubleWritable getScore() {
         return score;
     }
 
-    public Integer getProductId() {
+    public Text getProductId() {
         return productId;
     }
     
     @Override
     public void write(DataOutput out) throws IOException {
-        out.writeInt(productId);
-        out.writeDouble(score);
+        System.out.println("WRITE KEY PRODUCTID - " + productId.toString());
+        System.out.println("WRITE KEY SCORE - " + score.toString());
+        productId.write(out);
+        score.write(out);
     }
 
     @Override
     public void readFields(DataInput in) throws IOException {
-        productId = in.readInt();
-        score = in.readDouble();
+        productId.readFields(in);
+        score.readFields(in);
     }
 
     @Override
     public int compareTo(Object o) {
         SentimentKeyWritableComparable sentiment = (SentimentKeyWritableComparable) o;
-        Integer thisValue = this.productId;
-        Integer thatValue = sentiment.productId;
+        Text thisValue = this.productId;
+        Text thatValue = sentiment.productId;
 
-        return this.equals(o) ? 0 : (thatValue >= thisValue ? -1 : 1);
+        return this.equals(o) ? 0 : (thatValue.compareTo(thisValue) == 0 ? -1 : 1);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + productId;
+        result = prime * result + productId.hashCode();
         //result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
@@ -80,4 +84,11 @@ public class SentimentKeyWritableComparable implements WritableComparable {
         return Objects.equals(this.productId, other.productId)
                 && Objects.equals(this.score, other.score);
     }
+
+    @Override
+    public String toString() {
+        return productId.toString() + "-" + score.toString();  //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }

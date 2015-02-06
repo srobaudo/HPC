@@ -26,6 +26,7 @@ public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, Lo
         long count = 0;
         
         for (LongWritable val : values) {
+            //System.out.println("Value: " + val.get());
             sum += getScore(key.getScore(), val.get());
             count++;
         }
@@ -34,9 +35,9 @@ public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, Lo
         context.write(key, result);
     }
     
-    private double getScore(Double expected, Long got)
+    private double getScore(DoubleWritable expected, Long got)
     {
-        Long distance = Math.abs(got - Math.round(expected));
+        Long distance = Math.abs(got - Math.round(expected.get()));
         return distance == 0 
                 ? 1.0 
                 : distance == 1 
