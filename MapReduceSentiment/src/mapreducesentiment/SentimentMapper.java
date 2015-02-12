@@ -26,14 +26,17 @@ import org.apache.hadoop.mapreduce.Mapper;
  * @author camila
  */
 public class SentimentMapper extends Mapper<SentimentKeyWritableComparable, Text, SentimentKeyWritableComparable, LongWritable> {
-    private StanfordCoreNLP pipeline;
+    private static StanfordCoreNLP pipeline = null;
     
     @Override
     public void setup(Context context) throws IOException, InterruptedException 
     {
-        Properties props = new Properties();
-        props.put("annotators", "tokenize, ssplit, parse, sentiment");
-        pipeline = new StanfordCoreNLP(props);
+        if (pipeline == null)
+        {
+            Properties props = new Properties();
+            props.put("annotators", "tokenize, ssplit, parse, sentiment");
+            pipeline = new StanfordCoreNLP(props);
+        }
     }
     
     @Override
@@ -73,5 +76,4 @@ public class SentimentMapper extends Mapper<SentimentKeyWritableComparable, Text
             Logger.getLogger(SentimentMapper.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }
