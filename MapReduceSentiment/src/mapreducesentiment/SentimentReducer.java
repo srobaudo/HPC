@@ -37,7 +37,7 @@ public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, Lo
     
     private double getScore(DoubleWritable expected, Long got)
     {
-        Long distance = Math.abs(got - Math.round(expected.get()));
+        Long distance = Math.abs((got+1) - Math.round(expected.get()));
         return distance == 0 
                 ? 1.0 
                 : distance == 1 

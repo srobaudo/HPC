@@ -34,7 +34,7 @@ import java.util.stream.Stream;
  */
 public class SerialSentiment {
 
-    private static final String pathToCorpus = "movies3.txt";
+    private static final String pathToCorpus = "movies7mb.txt";
     
     public static final Pattern pattern = Pattern.compile("product\\/productId\\:\\s+([a-zA-Z0-9]+).*review\\/score\\:\\s+([\\d]+)\\..*review\\/text\\:\\s+(.*)", 
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
@@ -50,7 +50,7 @@ public class SerialSentiment {
         props.put("annotators", "tokenize, ssplit, parse, sentiment");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
         
-        try (Stream<String> stream = Files.lines(Paths.get(pathToCorpus), Charset.defaultCharset()))
+        try (Stream<String> stream = Files.lines(Paths.get(pathToCorpus), Charset.forName("ISO-8859-1")))
         {
             Iterator<String> lines = stream.iterator();
             while (lines.hasNext())
@@ -138,7 +138,7 @@ public class SerialSentiment {
             Tree sentimentTree = sentence.get(SentimentCoreAnnotations.AnnotatedTree.class);
             int sentiment = RNNCoreAnnotations.getPredictedClass(sentimentTree);
 
-            System.out.println("(" + sentiment + ")" + sentimentStr + "\t->\t " + sentence.toString());
+            //System.out.println("(" + sentiment + ")" + sentimentStr + "\t->\t " + sentence.toString());
 
             result += sentiment;
             count++;

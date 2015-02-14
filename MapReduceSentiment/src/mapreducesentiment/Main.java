@@ -41,10 +41,10 @@ public class Main extends Configured implements Tool {
         conf.set("yarn.nodemanager.resource.memory-mb", "4096");
         conf.set("yarn.scheduler.minimum-allocation-mb", "2048");
         conf.set("yarn.scheduler.maximum-allocation-mb", "4096");
-
-        //conf.set("mapreduce.jobtracker.maxtasks.perjob", "-1");
         conf.set("mapreduce.input.fileinputformat.split.minsize", "0");
-        conf.set("mapreduce.input.fileinputformat.split.maxsize", "5590400");
+        conf.set("mapreduce.input.fileinputformat.split.maxsize", "928800");//total size / data nodes
+        conf.set("mapreduce.task.timeout", "0");//NO timeout
+        
        // conf.set("yarn.scheduler.minimum-allocation-mb", "100");
         //conf.set("yarn.scheduler.maximum-allocation-mb", "2000");
         
@@ -62,9 +62,9 @@ public class Main extends Configured implements Tool {
         
         
 
-        FileInputFormat.setInputPaths(job, new Path("wasb:///movies3.txt"));//args[0]));
+        FileInputFormat.setInputPaths(job, new Path("wasb:///movies7mb.txt"));//args[0]));
         Date d = new Date();
-        FileOutputFormat.setOutputPath(job, new Path("wasb:///sentiment/test/outputMovies3"));//args[1]));
+        FileOutputFormat.setOutputPath(job, new Path("wasb:///sentiment/test/outputMovies4"));//args[1]));
         
         job.addCacheFile(new Path("wasb:///ejml-0.23.jar").toUri());
         job.addCacheFile(new Path("wasb:///javax.json.jar").toUri());
