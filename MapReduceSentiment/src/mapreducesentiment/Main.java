@@ -32,24 +32,23 @@ public class Main extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         
         Configuration conf = new Configuration();
-        conf.set("mapreduce.map.memory.mb", "2048");
-        conf.set("mapreduce.reduce.memory.mb", "4096");
-        conf.set("mapreduce.map.java.opts", "-Xmx1638m");
-        conf.set("mapreduce.reduce.java.opts", "-Xmx3277m");
-        conf.set("yarn.app.mapreduce.am.resource.mb", "4096");
-        conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx3277m");
-        conf.set("yarn.nodemanager.resource.memory-mb", "4096");
-        conf.set("yarn.scheduler.minimum-allocation-mb", "2048");
-        conf.set("yarn.scheduler.maximum-allocation-mb", "4096");
-        conf.set("mapreduce.input.fileinputformat.split.minsize", "0");
-        conf.set("mapreduce.input.fileinputformat.split.maxsize", "928800");//total size / data nodes
+
+        //Configuración de memoria para que ejecuten 16 Maps
+        conf.set("mapreduce.map.memory.mb", "1400");
+        conf.set("mapreduce.reduce.memory.mb", "2800");
+        conf.set("mapreduce.map.java.opts", "-Xmx1120m");
+        conf.set("mapreduce.reduce.java.opts", "-Xmx2240m");
+        conf.set("yarn.app.mapreduce.am.resource.mb", "2800");
+        conf.set("yarn.app.mapreduce.am.command-opts", "-Xmx2240m");
+        conf.set("yarn.nodemanager.resource.memory-mb", "5040");
+        conf.set("yarn.scheduler.minimum-allocation-mb", "1400");
+        conf.set("yarn.scheduler.maximum-allocation-mb", "5040");
         conf.set("mapreduce.task.timeout", "0");//NO timeout
         
-       // conf.set("yarn.scheduler.minimum-allocation-mb", "100");
-        //conf.set("yarn.scheduler.maximum-allocation-mb", "2000");
+        //Tamaño máximo de split para determinar la cantidad de splits/Mappers
+        conf.set("mapreduce.input.fileinputformat.split.minsize", "0");
+        conf.set("mapreduce.input.fileinputformat.split.maxsize", "104500");//total size / data nodes
         
-       
-
         Job job = new Job(conf, "sentiment");
 
         job.setOutputKeyClass(SentimentKeyWritableComparable.class);
@@ -61,11 +60,11 @@ public class Main extends Configured implements Tool {
         job.setInputFormatClass(MovieCommentInputFormat.class);
         
         
-
-        FileInputFormat.setInputPaths(job, new Path("wasb:///movies7mb.txt"));//args[0]));
-        Date d = new Date();
-        FileOutputFormat.setOutputPath(job, new Path("wasb:///sentiment/test/outputMovies4"));//args[1]));
+        //Archivo corpus de comentarios se lee desde el blob storage
+        FileInputFormat.setInputPaths(job, new Path("wasb:///movies800K.txt"));//args[0]));
+        FileOutputFormat.setOutputPath(job, new Path("wasb:///sentiment/test/movies800kb"));//args[1]));
         
+        //Librerías que se copian en caché de cada data node
         job.addCacheFile(new Path("wasb:///ejml-0.23.jar").toUri());
         job.addCacheFile(new Path("wasb:///javax.json.jar").toUri());
         job.addCacheFile(new Path("wasb:///jollyday.jar").toUri());

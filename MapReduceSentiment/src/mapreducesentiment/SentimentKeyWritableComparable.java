@@ -42,8 +42,6 @@ public class SentimentKeyWritableComparable implements WritableComparable {
     
     @Override
     public void write(DataOutput out) throws IOException {
-        System.out.println("WRITE KEY PRODUCTID - " + productId.toString());
-        System.out.println("WRITE KEY SCORE - " + score.toString());
         productId.write(out);
         score.write(out);
     }
@@ -68,7 +66,6 @@ public class SentimentKeyWritableComparable implements WritableComparable {
         final int prime = 31;
         int result = 1;
         result = prime * result + productId.hashCode();
-        //result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         return result;
     }
 
@@ -87,7 +84,7 @@ public class SentimentKeyWritableComparable implements WritableComparable {
 
     @Override
     public String toString() {
-        return productId.toString() + "-" + score.toString();  //To change body of generated methods, choose Tools | Templates.
+        return productId.toString() + "-" + score.toString();
     }
     
     

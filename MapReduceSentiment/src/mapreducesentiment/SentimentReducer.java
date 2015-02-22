@@ -16,17 +16,16 @@ import org.apache.hadoop.mapreduce.Reducer;
  */
 public class SentimentReducer extends Reducer<SentimentKeyWritableComparable, LongWritable, SentimentKeyWritableComparable, DoubleWritable> {
 
-    private DoubleWritable result = new DoubleWritable();
+    private final DoubleWritable result = new DoubleWritable();
 
     @Override
     public void reduce(SentimentKeyWritableComparable key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
         
-        System.out.println("Entro al reducer");
+        System.out.println("Entro al reducer.");
         Double sum = 0.0;
         long count = 0;
         
         for (LongWritable val : values) {
-            //System.out.println("Value: " + val.get());
             sum += getScore(key.getScore(), val.get());
             count++;
         }

@@ -13,10 +13,10 @@ import org.apache.hadoop.io.Writable;
 /**
  *
  * @author camila
+ * 
  */
 public class CommentWritable  implements Writable{
-   
-       // Some data     
+    
        private double score;
        private String comment;
        
